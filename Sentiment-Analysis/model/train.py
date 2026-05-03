@@ -12,19 +12,19 @@ from tensorflow.keras.layers import (
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 
-# 1. Load cleaned data
+# Load cleaned data
 df = load_and_clean()
 print(f"Total reviews: {len(df)}")
 
-# 2. Split into features and labels
+# Split into features and labels
 X = np.array(df['cleaned_text'].astype(str))
 y = df['label'].astype(int).values
 
-# 3. Train / validation / test split (70/15/15)
+# Train / validation / test split 
 X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3, stratify=y, random_state=42)
 X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, stratify=y_temp, random_state=42)
 
-# 4. Define TextVectorization layer
+# 4Define TextVectorization layer
 max_tokens = 20000
 output_sequence_length = 120
 
@@ -38,21 +38,21 @@ vectorize_layer = TextVectorization(
 )
 print("done defining vectorization layer")
 
-# 5. Adapt the layer to the training data
+# Adapt the layer to the training data
 vectorize_layer.adapt(X_train)
 
-# 6. Build the model using Functional APIinputs = Input(shape=(), dtype=tf.string)
+# Build the model using Functional API
 inputs = Input(shape=(), dtype=tf.string)
 x = vectorize_layer(inputs)
 
-# Embedding layer (bigger = better understanding)
+# Embedding layer 
 x = Embedding(max_tokens, 64)(x)
 
-# CNN layer → captures phrases like "not good", "very bad"
+# CNN layer:captures phrases like "not good", "very bad"
 x = Conv1D(128, 5, activation='relu')(x)
 x = MaxPooling1D(pool_size=2)(x)
 
-# LSTM → understands sequence/context
+# LSTM layer: captures long-term dependencies and context
 x = Bidirectional(LSTM(32, return_sequences=True))(x)
 
 # Global pooling (keeps strongest signals)
@@ -78,10 +78,11 @@ model.summary()
 print("done building model")
 
 
-# 7. Train with early stopping
+# Train with early stopping
 early_stop = EarlyStopping(patience=2, restore_best_weights=True)
 print("starting training...")
-# Important: Reshape X_train to (samples, 1) to match the Input shape (1,)
+
+
 history = model.fit(
     X_train, y_train,
     validation_data=(X_val, y_val),
@@ -93,9 +94,9 @@ history = model.fit(
 )
 print("done training")
 
-# 8. Save the model
+# Save the model
 model.save('sentiment_model.keras')
 print("Model saved as 'sentiment_model.keras'")
-# 9. Evaluate on test set (also reshape)
+# Evaluate on test set
 test_loss, test_acc = model.evaluate(X_test, y_test, verbose=0)
 print(f"\nTest Accuracy: {test_acc:.4f}") 

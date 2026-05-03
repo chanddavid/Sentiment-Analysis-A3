@@ -10,7 +10,7 @@ import os
 import nltk
 import random
 import pandas as pd
-import contractions                     # to expand "it's" -> "it is", etc.
+import contractions                    
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -20,7 +20,7 @@ from nltk.tokenize import word_tokenize
 nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('punkt_tab')      # required for newer NLTK
-nltk.download('wordnet')               # for lemmatization (optional)
+nltk.download('wordnet')               # for lemmatization 
 
 
 def clean_review(text):
@@ -51,10 +51,10 @@ def clean_review(text):
     extra_stopwords = {'br', 'u', 'im', 'dont', 'didnt', 'couldnt', 'wouldnt'}
     stop_words.update(extra_stopwords)
     
-    # Filter out stopwords and short tokens (length < 2)
+    # Filter out stopwords and short tokens (length ≤ 1)
     tokens = [word for word in tokens if word not in final_stop_words and len(word) > 1]
     
-    # 3.9 (Optional) Lemmatization – reduces words to base form (running → run)
+    # lemmatization (reduce words to their base form)
     lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(word) for word in tokens]
     
